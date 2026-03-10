@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Flappy Friend</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+height:100vh;
+width:100vw;
+display:flex;
+justify-content:center;
+align-items:center;
+background:url("flappybackground.png") center/cover no-repeat;
+overflow:hidden;
+}
+
+/* game container */
+
+.game{
+width:100%;
+max-width:420px;
+height:100vh;
+position:relative;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+}
+
+/* coins display */
+
+.coins{
+position:absolute;
+top:15px;
+right:15px;
+display:flex;
+align-items:center;
+gap:8px;
+background:rgba(0,0,0,0.35);
+padding:6px 12px;
+border-radius:20px;
+color:white;
+font-weight:bold;
+}
+
+.coins img{
+width:26px;
+}
+
+/* clouds */
+
+.cloud{
+position:absolute;
+width:120px;
+opacity:0.8;
+animation:cloudMove linear infinite;
+}
+
+.c1{top:80px; left:-150px; animation-duration:30s;}
+.c2{top:200px; left:-200px; animation-duration:40s;}
+.c3{top:350px; left:-250px; animation-duration:50s;}
+
+@keyframes cloudMove{
+from{transform:translateX(0)}
+to{transform:translateX(150vw)}
+}
+
+/* title */
+
+.title{
+font-size:52px;
+font-weight:900;
+margin-bottom:40px;
+
+background:linear-gradient(180deg,#fff9c4,#ffd54f,#ffb300);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+text-shadow:
+0 3px 0 #d48a00,
+0 6px 0 #a66a00,
+0 8px 15px rgba(0,0,0,0.4);
+
+animation:float 3s ease-in-out infinite;
+letter-spacing:2px;
+}
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-8px)}
+}
+
+/* buttons */
+
+.menu-btn{
+width:240px;
+padding:16px;
+margin:12px;
+font-size:20px;
+border:none;
+border-radius:40px;
+cursor:pointer;
+color:white;
+font-weight:bold;
+transition:transform 0.15s;
+box-shadow:0 6px 0 rgba(0,0,0,0.25);
+}
+
+.menu-btn:active{
+transform:scale(0.95);
+box-shadow:0 2px 0 rgba(0,0,0,0.25);
+}
+
+.play{
+background:linear-gradient(#ffb300,#ff6f00);
+}
+
+.options{
+background:linear-gradient(#42a5f5,#1e88e5);
+}
+
+.credits{
+background:linear-gradient(#66bb6a,#2e7d32);
+}
+
+/* popup windows */
+
+.popup{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:25px;
+border-radius:12px;
+width:260px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+display:none;
+}
+
+.popup h2{
+margin-bottom:10px;
+}
+
+.close{
+margin-top:10px;
+padding:8px 18px;
+border:none;
+border-radius:20px;
+background:#ff6f00;
+color:white;
+cursor:pointer;
+}
+
+/* footer icons */
+
+.icons{
+position:absolute;
+bottom:20px;
+display:flex;
+gap:20px;
+}
+
+.icon{
+width:40px;
+height:40px;
+background:white;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:20px;
+box-shadow:0 4px 10px rgba(0,0,0,0.25);
+cursor:pointer;
+}
+.brand{
+position:absolute;
+top:15px;
+left:15px;
+font-size:18px;
+font-weight:900;
+letter-spacing:1px;
+
+background:linear-gradient(90deg,#ffffff,#ffe082,#ffb300);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+text-shadow:
+0 2px 6px rgba(0,0,0,0.4);
+
+font-family:Arial, sans-serif;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="game">
+<div class="brand">Zenci Studios</div>
+<div class="coins">
+<img src="fcoins.png">
+<span id="coinCount">0</span>
+</div>
+
+<img class="cloud c1" src="avatar.png">
+<img class="cloud c2" src="avatar.png">
+<img class="cloud c3" src="avatar.png">
+
+<h1 class="title">Furry Irem</h1>
+
+<button class="menu-btn play" onclick="startGame()">PLAY</button>
+
+<button class="menu-btn options" onclick="openOptions()">OPTIONS</button>
+
+<button class="menu-btn credits" onclick="openCredits()">CREDITS</button>
+
+<div class="icons">
+<div class="icon">🏆</div>
+<div class="icon">⚙️</div>
+</div>
+
+</div>
+
+<!-- options popup -->
+
+<div class="popup" id="optionsPopup">
+<h2>Options</h2>
+<p>More settings coming soon.</p>
+<button class="close" onclick="closePopup()">Close</button>
+</div>
+
+<!-- credits popup -->
+
+<div class="popup" id="creditsPopup">
+<h2>Credits</h2>
+<p>Game by Rocku</p>
+<p>Built with HTML and backchodi</p>
+<button class="close" onclick="closePopup()">Close</button>
+</div>
+
+<script>
+
+/* coins */
+
+let coins = localStorage.getItem("flappyCoins");
+
+if(!coins){
+coins = 0;
+}
+
+document.getElementById("coinCount").innerText = coins;
+
+/* play */
+
+function startGame(){
+window.location.href="game.html";
+}
+
+/* popups */
+
+function openOptions(){
+document.getElementById("optionsPopup").style.display="block";
+}
+
+function openCredits(){
+document.getElementById("creditsPopup").style.display="block";
+}
+
+function closePopup(){
+document.getElementById("optionsPopup").style.display="none";
+document.getElementById("creditsPopup").style.display="none";
+}
+
+</script>
+
+</body>
+</html>
