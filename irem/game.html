@@ -143,6 +143,67 @@ color:white;
 text-shadow:0 5px 10px black;
 }
 
+/* ADDED jumpscare screen */
+
+#jumpscare{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+#jumpscare img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+/* Jumpscare effects */
+
+#jumpscare{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+z-index:999;
+overflow:hidden;
+}
+
+#jumpscare img{
+width:100%;
+height:100%;
+object-fit:cover;
+animation:shake 0.1s infinite, flash 0.2s infinite;
+filter:blur(2px) contrast(140%) brightness(120%);
+}
+
+/* screen shake */
+
+@keyframes shake{
+0%{transform:translate(0,0);}
+25%{transform:translate(-10px,8px);}
+50%{transform:translate(8px,-10px);}
+75%{transform:translate(-8px,6px);}
+100%{transform:translate(10px,-8px);}
+}
+
+/* flashing light */
+
+@keyframes flash{
+0%{filter:brightness(1.5) contrast(2);}
+50%{filter:brightness(0.5) contrast(1);}
+100%{filter:brightness(1.8) contrast(2);}
+}
 </style>
 
 </head>
@@ -164,6 +225,11 @@ text-shadow:0 5px 10px black;
 <h2>Game Over</h2>
 <button class="btn" onclick="restartGame()">Restart</button>
 <button class="btn" onclick="goHome()">Home</button>
+
+<!-- ADDED button -->
+
+<button class="btn" onclick="surpriseMe()">Surprise Me</button>
+
 </div>
 
 <div class="coinbox" id="coinbox">
@@ -172,6 +238,14 @@ text-shadow:0 5px 10px black;
 </div>
 
 </div>
+
+<!-- ADDED jumpscare elements -->
+
+<div id="jumpscare">
+<img src="gameover.png">
+</div>
+
+<audio id="screamSound" src="scream.mp3"></audio>
 
 <script>
 
@@ -427,14 +501,39 @@ document.getElementById("finalcoins").innerText=fpoints;
 /* restart */
 
 function restartGame(){
-
 location.reload();
-
 }
 
 function goHome(){
-
 window.location.href="index.html";
+}
+
+function surpriseMe(){
+
+let scare=document.getElementById("jumpscare");
+let sound=document.getElementById("screamSound");
+
+scare.style.display="flex";
+
+sound.currentTime=0;
+sound.volume=1;
+sound.play();
+
+/* body shake */
+
+document.body.style.animation="shake 0.15s infinite";
+
+/* stop shake after scare */
+
+setTimeout(()=>{
+document.body.style.animation="none";
+},3000);
+
+/* go to home page after scare */
+
+setTimeout(()=>{
+window.location.href="index.html";
+},4000);
 
 }
 
